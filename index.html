@@ -1,139 +1,140 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Form Registrasi Pendakian</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Pendaftaran Pendakian</title>
   <style>
-    body { background-color: #f4f6f8; padding: 2rem; }
-    .container { background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h2 { color: #2c3e50; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; color: #333; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select {
+      width: 100%; padding: 8px; margin-top: 4px;
+      border: 1px solid #ccc; border-radius: 4px;
+    }
+    button {
+      background: #007bff; color: #fff; border: none;
+      padding: 10px 16px; border-radius: 4px;
+      cursor: pointer; margin-top: 15px;
+    }
+    button:hover { background: #0056b3; }
+    .member { border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 4px; background: #fff; }
   </style>
 </head>
 <body>
-<div class="container">
-  <h2 class="text-center mb-4">Form Registrasi Pendakian Gunung</h2>
+  <h2>Form Pendaftaran Pendakian</h2>
   <form id="pendakianForm">
-    <div class="mb-3">
-      <label class="form-label">Tipe Pendaftaran</label>
-      <select class="form-select" id="groupType" required>
-        <option value="">-- Pilih --</option>
-        <option value="0">Individu</option>
-        <option value="1">Kelompok</option>
-      </select>
-    </div>
+    <label>Jenis Pendaftaran</label>
+    <select id="group" required>
+      <option value="">-- Pilih Jenis --</option>
+      <option value="0">Individu</option>
+      <option value="1">Kelompok</option>
+    </select>
 
-    <div class="mb-3">
-      <label class="form-label">Tanggal Rencana Pendakian</label>
-      <input type="date" class="form-control" id="date" required>
-    </div>
+    <label>Tanggal Rencana Pendakian</label>
+    <input type="date" id="date" required>
 
     <div id="groupSection" style="display:none;">
-      <div class="mb-3">
-        <label class="form-label">Nama Grup</label>
-        <input type="text" class="form-control" id="groupname">
-      </div>
+      <label>Nama Group</label>
+      <input type="text" id="groupname" placeholder="Nama Kelompok">
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Nama Ketua / Individu</label>
-      <input type="text" class="form-control" id="hikername0" required>
+    <h3>Data Ketua</h3>
+    <label>Nama Ketua</label>
+    <input type="text" id="hikername0" required>
+    <label>NIK Ketua</label>
+    <input type="text" id="nik0" required>
+    <label>Email Ketua</label>
+    <input type="email" id="email0" required>
+    <label>No Telp Darurat Ketua</label>
+    <input type="text" id="phone0" required>
+
+    <div id="membersContainer" style="display:none;">
+      <h3>Anggota Kelompok</h3>
+      <div id="members"></div>
+      <button type="button" id="addMember">+ Tambah Anggota</button>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">NIK</label>
-      <input type="text" class="form-control" id="nik0" required>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control" id="email0" required>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">No Telp Darurat</label>
-      <input type="text" class="form-control" id="phone0" required>
-    </div>
-
-    <div id="anggotaContainer" style="display:none;">
-      <hr>
-      <h5>Anggota Kelompok</h5>
-      <div id="anggotaList"></div>
-      <button type="button" class="btn btn-outline-primary mt-2" id="tambahAnggota">+ Tambah Anggota</button>
-    </div>
-
-    <div class="text-center mt-4">
-      <button type="submit" class="btn btn-success">Kirim Pendaftaran</button>
-    </div>
+    <button type="submit">Kirim Pendaftaran</button>
   </form>
-</div>
 
-<script>
-const anggotaList = document.getElementById('anggotaList');
-let anggotaCount = 0;
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyKgkvB9lvlKBI_SXjiGaLGpCIUijmmXKprlMdn04k6GOkLsa1BvUJlAqyfRlX127PnvQ/exec"; // GANTI DENGAN URL KAMU SENDIRI
 
-// Tampilkan field berdasarkan tipe pendaftaran
-document.getElementById('groupType').addEventListener('change', (e) => {
-  const isGroup = e.target.value === '1';
-  document.getElementById('groupSection').style.display = isGroup ? 'block' : 'none';
-  document.getElementById('anggotaContainer').style.display = isGroup ? 'block' : 'none';
-});
+    const form = document.getElementById("pendakianForm");
+    const groupSelect = document.getElementById("group");
+    const groupSection = document.getElementById("groupSection");
+    const membersContainer = document.getElementById("membersContainer");
+    const membersDiv = document.getElementById("members");
+    const addMemberBtn = document.getElementById("addMember");
 
-// Tambah anggota baru
-const tambahBtn = document.getElementById('tambahAnggota');
-tambahBtn.addEventListener('click', () => {
-  if (anggotaCount >= 9) return alert('Maksimal 9 anggota tambahan');
-  anggotaCount++;
-  const div = document.createElement('div');
-  div.classList.add('border', 'p-3', 'mb-2', 'rounded');
-  div.innerHTML = `
-    <h6>Anggota ${anggotaCount}</h6>
-    <input type="text" class="form-control mb-2" placeholder="Nama" id="hikername${anggotaCount}">
-    <input type="text" class="form-control mb-2" placeholder="NIK" id="nik${anggotaCount}">
-    <input type="email" class="form-control mb-2" placeholder="Email" id="email${anggotaCount}">
-    <input type="text" class="form-control mb-2" placeholder="No Telp Darurat" id="phone${anggotaCount}">
-  `;
-  anggotaList.appendChild(div);
-});
+    let memberCount = 0;
 
-// Kirim data ke Google Sheet
-const scriptURL = "https://script.google.com/macros/s/AKfycbyKgkvB9lvlKBI_SXjiGaLGpCIUijmmXKprlMdn04k6GOkLsa1BvUJlAqyfRlX127PnvQ/exec"; // ganti dengan URL Apps Script kamu
-
-document.getElementById('pendakianForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const groupType = document.getElementById('groupType').value;
-  const data = {
-    date: document.getElementById('date').value,
-    groupname: groupType === '1' ? document.getElementById('groupname').value : 'null',
-    hikername0: document.getElementById('hikername0').value,
-    nik0: document.getElementById('nik0').value,
-    email0: document.getElementById('email0').value,
-    phone0: document.getElementById('phone0').value,
-    group: groupType,
-    members: []
-  };
-  for (let i = 1; i <= anggotaCount; i++) {
-    data.members.push({
-      name: document.getElementById(`hikername${i}`).value,
-      nik: document.getElementById(`nik${i}`).value,
-      email: document.getElementById(`email${i}`).value,
-      phone: document.getElementById(`phone${i}`).value
+    groupSelect.addEventListener("change", () => {
+      const isGroup = groupSelect.value === "1";
+      groupSection.style.display = isGroup ? "block" : "none";
+      membersContainer.style.display = isGroup ? "block" : "none";
     });
-  }
 
-  fetch(scriptURL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  .then(res => res.text())
-  .then(msg => {
-    alert('Pendaftaran berhasil dikirim!');
-    document.getElementById('pendakianForm').reset();
-  })
-  .catch(err => alert('Gagal mengirim data!'));
-});
-</script>
+    addMemberBtn.addEventListener("click", () => {
+      if (memberCount >= 9) {
+        alert("Maksimal 9 anggota tambahan!");
+        return;
+      }
+      memberCount++;
+      const div = document.createElement("div");
+      div.classList.add("member");
+      div.innerHTML = `
+        <h4>Anggota ${memberCount}</h4>
+        <label>Nama</label><input type="text" id="hikername${memberCount}" required>
+        <label>NIK</label><input type="text" id="nik${memberCount}" required>
+        <label>Email</label><input type="email" id="email${memberCount}" required>
+        <label>No Telp Darurat</label><input type="text" id="phone${memberCount}" required>
+      `;
+      membersDiv.appendChild(div);
+    });
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const data = {
+        group: groupSelect.value,
+        date: document.getElementById("date").value,
+        groupname: document.getElementById("groupname")?.value || "null",
+        hikername0: document.getElementById("hikername0").value,
+        nik0: document.getElementById("nik0").value,
+        email0: document.getElementById("email0").value,
+        phone0: document.getElementById("phone0").value,
+        members: []
+      };
+
+      for (let i = 1; i <= memberCount; i++) {
+        data.members.push({
+          name: document.getElementById(`hikername${i}`).value,
+          nik: document.getElementById(`nik${i}`).value,
+          email: document.getElementById(`email${i}`).value,
+          phone: document.getElementById(`phone${i}`).value
+        });
+      }
+
+      const params = new URLSearchParams({ data: JSON.stringify(data) });
+      fetch(`${scriptURL}?${params.toString()}`)
+        .then(r => r.text())
+        .then(msg => {
+          alert("Pendaftaran berhasil dikirim!");
+          form.reset();
+          membersDiv.innerHTML = "";
+          memberCount = 0;
+        })
+        .catch(err => alert("Gagal mengirim data: " + err.message));
+    });
+  </script>
 </body>
 </html>
