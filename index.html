@@ -26,11 +26,15 @@
       cursor: pointer; margin-top: 15px;
     }
     button:hover { background: #0056b3; }
-    .member { border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 4px; background: #fff; }
+    .member {
+      border: 1px solid #ccc; padding: 10px;
+      margin-top: 10px; border-radius: 4px; background: #fff;
+    }
   </style>
 </head>
 <body>
   <h2>Form Pendaftaran Pendakian</h2>
+
   <form id="pendakianForm">
     <label>Jenis Pendaftaran</label>
     <select id="group" required>
@@ -67,7 +71,8 @@
   </form>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyKgkvB9lvlKBI_SXjiGaLGpCIUijmmXKprlMdn04k6GOkLsa1BvUJlAqyfRlX127PnvQ/exec"; // GANTI DENGAN URL KAMU SENDIRI
+    // GANTI DENGAN URL APPS SCRIPT KAMU SENDIRI
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyKgkvB9lvlKBI_SXjiGaLGpCIUijmmXKprlMdn04k6GOkLsa1BvUJlAqyfRlX127PnvQ/exec";
 
     const form = document.getElementById("pendakianForm");
     const groupSelect = document.getElementById("group");
@@ -104,6 +109,7 @@
 
     form.addEventListener("submit", e => {
       e.preventDefault();
+
       const data = {
         group: groupSelect.value,
         date: document.getElementById("date").value,
@@ -125,15 +131,14 @@
       }
 
       const params = new URLSearchParams({ data: JSON.stringify(data) });
-      fetch(`${scriptURL}?${params.toString()}`)
-        .then(r => r.text())
-        .then(msg => {
-          alert("Pendaftaran berhasil dikirim!");
-          form.reset();
-          membersDiv.innerHTML = "";
-          memberCount = 0;
-        })
-        .catch(err => alert("Gagal mengirim data: " + err.message));
+
+      // Kirim data via tab baru (bypass CORS)
+      window.open(`${scriptURL}?${params.toString()}`, '_blank');
+
+      alert("✅ Pendaftaran dikirim! Data akan masuk ke Google Sheet dalam beberapa detik.");
+      form.reset();
+      membersDiv.innerHTML = "";
+      memberCount = 0;
     });
   </script>
 </body>
